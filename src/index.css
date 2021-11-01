@@ -1,13 +1,257 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+#root{
+    width: 100vw;
+    height: 100vh;
+    background-color: #f8f8f8;
+}
+
+.container{
+    width: 41vw;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1{
+    font-size: 84px;
+    font-weight: 200;
+    letter-spacing: .2rem;
+    color: skyblue;
+}
+
+.input-bar, .board, .footer{
+    background-color: #fff;
+}
+
+.input-bar{
+    width: 100%;
+    height: 9vh;
+    display: flex;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, .1);
+    margin-bottom: 1px;
+}
+
+.input-bar input[type='checkbox']{
+    appearance: none;
+    outline: none;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    position: relative;
+    margin: 8px;
+    vertical-align: baseline;
+}
+
+.input-bar input[type="checkbox"]::before{
+    content: '\2304';
+    display: inline-block;
+    position: absolute;
+    transform: translateY(-50%);
+    top: 0;
+    left: 0;
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 200;
+    color: rgba(0, 0, 0, .1);
+    width: 100%;
+    height: 100%;
+    vertical-align: middle;
+}
+
+.input-bar input[type="checkbox"]:checked::after{
+    content: '\2304';
+    display: inline-block;
+    position: absolute;
+    transform: translateY(-50%);
+    top: 0;
+    left: 0;
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 200;
+    color: rgba(0, 0, 0, .5);
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.input-bar input{
+    width: 100%;
+    font-size: 24px;
+    font-style: italic;
+    padding: 0 8px;
+    font-weight: 200;
+    border: none;
+    outline: none;
+}
+
+.input-bar input::-webkit-input-placeholder{
+    color: #e0e0e0;
+    font-weight: 200;
+}
+
+.board{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.board li{
+    list-style: none;
+    height: 9vh;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.todo-item{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    position: relative;
+    /* box-shadow: 0 0 3px rgba(0, 0, 0, .1); */
+}
+.todo-item input[type="checkbox"]{
+    appearance: none;
+    outline: none;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    position: relative;
+    background-color: #fff;
+    border-radius: 50%;
+    font-size: 1.8rem;
+    margin: 8px;
+}
+
+.todo-item input[type="checkbox"]:checked::after{
+    content: '\2713';
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 1.8rem;
+    font-weight: 200;
+    color: skyblue;
+    width: 100%;
+    height: 100%;
+    border: skyblue;
+    border-radius: 50%;
+}
+
+.todo-item label{
+    display: flex;
+    align-items: center;
+    line-height: 54px;
+    font-size: 24px;
+    font-weight: 200;
+    padding: 0 8px;
+    vertical-align: middle;
+    flex: 9;
+}
+
+.todo-item input[type="checkbox"]:checked + label{
+    color: rgba(0, 0, 0, .2);
+}
+
+
+
+#delete-btn{
+    display: none;
+    width: 20px;
+    height: 20px;
+    transform: translateY(-35%);
+    position: absolute;
+    top: 0;
+    right: 24px;
+    font-size: 4rem;
+    font-weight: normal;
+    color: rgba(255, 0, 0, 0.5);
+    cursor: pointer;
+}
+
+li input{
+    width: 100%;
+    height: 100%;
+    font-size: 24px;
+    font-weight: 200;
+    padding: 0 16px;
+}
+
+.footer{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 16px;
+    font-weight: 200;
+    font-size: .9rem;
+    color: rgba(0, 0, 0, .8);
+    position: relative;
+    box-shadow: 0 3px 3px 0 rgba(0, 0, 0, .1);
+}
+
+.footer p{
+    font-size: .9rem;
+    line-height: 32px;
+}
+
+.footer .mode-btns{
+    position: absolute;
+    left: 72px;
+    display: flex;
+    margin-left: 40px;
+    justify-content: center;
+    align-items: center;
+}
+
+.footer .mode-btns button{
+    width: auto;
+    height: 2rem;
+    font-size: .8rem;
+    font-weight: 200;
+    -webkit-appearance: none;
+    background-color: #fff;
+    padding: 4px 8px;
+    border-radius: 5px;
+    margin: 0 6px;
+    border: none;
+    cursor: pointer;
+    border: 1px solid rgba(0, 0, 0, 0);
+    color: rgba(0, 0, 0, .8);
+}
+
+#undo-btn, #redo-btn{
+    color: #fff;
+    background-color: skyblue;
+}
+
+.disabled{
+    cursor:none;
+    background-color: rgba(0, 0, 0, .1) !important;
+}
+
+.footer .mode-btns button:focus{
+    outline: none;
+}
+
+.footer .mode-btns button:hover{
+    border: 1px solid rgba(135, 206, 235, .2);
+}
+
+.active{
+    border: 1px solid skyblue !important;
+}
+
+.footer #clear:hover{
+    cursor: pointer;
+    text-decoration: underline;
 }
