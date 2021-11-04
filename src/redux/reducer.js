@@ -1,242 +1,136 @@
-import { 
-    ADD_TODO, 
-    DELETE_TODO, 
-    SELECT_ALL,
-    INITIALIZE_STATE,
-    COMPLETE_TODO,
-    UNDO,
-    REDO,
-    CLEAR_COMPLETED,
-    CHANGE_MODE,
-    SAVE_EDIT
+import { getItemFromLocalStorage, updateLocalStorage } from '../localStorageOperation';
+import { ALL } from '../modeTypes';
+import {
+	ADD_TODO,
+	DELETE_TODO,
+	SELECT_ALL,
+	COMPLETE_TODO,
+	UNDO,
+	REDO,
+	CLEAR_COMPLETED,
+	CHANGE_MODE,
+	SAVE_EDIT
 } from './actionType';
 
 const initalState = {
-    todos: {
-        allTodos: [],
-        activeTodos: [],
-        completedTodos: []
-    },
-    cache: [],
-    mode: 'All'
+	todos: getItemFromLocalStorage('todos'),
+	undoList: getItemFromLocalStorage('undoList'),
+	mode: ALL
+};
+
+export const isAllTodosCompleted = (todos) => todos.length > 0 && todos.every((item) => item.completed);
+
+export default function reducer(state = initalState, action) {
+	let { type, payload } = action;
+	switch (type) {
+		// 添加todo
+		case ADD_TODO: {
+			const todos = [ payload, ...state.todos ];
+			updateLocalStorage('todos', todos);
+			return {
+				...state,
+				todos
+			};
+		}
+		// 全选/取消全选
+		case SELECT_ALL: {
+			let { todos } = state;
+			const allCompleted = isAllTodosCompleted(todos);
+
+			todos = todos.map((item) => {
+				item.completed = allCompleted ? false : true;
+				return item;
+			});
+			updateLocalStorage('todos', todos);
+			return {
+				...state,
+				todos
+			};
+		}
+		// 点击todo，修改completed状态
+		case COMPLETE_TODO: {
+			const todos = state.todos.map((item) => {
+				if (item.id === payload) {
+					item.completed = !item.completed;
+				}
+				return item;
+			});
+			updateLocalStorage('todos', todos);
+			return {
+				...state,
+				todos
+			};
+		}
+		// 删除todo
+		case DELETE_TODO: {
+			const todos = state.todos.filter((item) => item.id !== payload);
+			updateLocalStorage('todos', todos);
+			return {
+				...state,
+				todos
+			};
+		}
+		// undo
+		case UNDO: {
+			const undoItem = state.todos.find((item) => !item.completed);
+			const undoList = [ undoItem, ...state.undoList ];
+			const todos = state.todos.filter((item) => item.id !== undoItem.id);
+
+			updateLocalStorage('todos', todos);
+			updateLocalStorage('undoList', undoList);
+			return {
+				...state,
+				undoList,
+				todos
+			};
+		}
+		// redo
+		case REDO: {
+			const redoItem = state.undoList.shift();
+			const todos = [ redoItem, ...state.todos ];
+			const undoList = state.undoList.filter((item) => item.id !== redoItem.id);
+
+			updateLocalStorage('todos', todos);
+			updateLocalStorage('undoList', undoList);
+			return {
+				...state,
+				todos,
+				undoList
+			};
+		}
+		// 清空已完成
+		case CLEAR_COMPLETED: {
+			const todos = state.todos.filter((item) => !item.completed);
+			updateLocalStorage('todos', todos);
+			return {
+				...state,
+				todos
+			};
+		}
+		// 修改mode
+		case CHANGE_MODE: {
+			return {
+				...state,
+				mode: payload
+			};
+		}
+		// 保存单行编辑内容
+		case SAVE_EDIT: {
+			const { id, content } = payload;
+			const todos = state.todos.map((item) => {
+				if (item.id === id) {
+					item.content = content;
+				}
+				return item;
+			});
+			updateLocalStorage('todos', todos);
+
+			return {
+				...state,
+				todos
+			};
+		}
+		default:
+			return state;
+	}
 }
-
-const reducer = (state = initalState, action) => {
-    let {type, payload} = action;
-    switch(type){
-        // 添加todo
-        case ADD_TODO:{
-            let {allTodos, activeTodos} = state.todos;
-            allTodos.unshift(payload);
-            activeTodos.unshift(payload);
-            let todos = {
-                ...state.todos,
-                allTodos: allTodos,
-                activeTodos: activeTodos
-            }
-            
-            localStorage.setItem('todos', JSON.stringify(todos));
-            return {
-                ...state,
-                todos
-            };
-        }
-        // 全选/取消全选
-        case SELECT_ALL:{
-            let {allTodos, completedTodos} = state.todos;
-            let todos;
-            // 全部修改成未完成
-            if(allTodos.length === completedTodos.length){
-                allTodos = allTodos.map(item => {
-                    item.completed = false;
-                    return item;
-            })
-            todos = {
-                allTodos,
-                activeTodos: allTodos,
-                completedTodos: []
-            };
-            localStorage.setItem('todos', JSON.stringify(todos));
-            // 全部修改为已完成
-            }else{
-                allTodos = allTodos.map(item => {
-                    item.completed = true;
-                    return item;
-                })
-                todos = {
-                    allTodos,
-                    activeTodos: [],
-                    completedTodos: allTodos
-                };
-                localStorage.setItem('todos', JSON.stringify(todos));
-            }
-            return {
-                ...state,
-                todos
-            } 
-        }
-        // 初始化state
-        case INITIALIZE_STATE: {
-            return {
-                ...state,
-                mode: 'All',
-                todos: {...payload.todos},
-                cache: payload.cache
-            }
-        }
-        // 点击todo，修改completed状态
-        case COMPLETE_TODO: {
-            let {allTodos, activeTodos, completedTodos} = state.todos;
-
-            allTodos = allTodos.map(item => {
-                if(item.id === payload){
-                    item.completed = !item.completed;
-                }
-                return item;
-            })
-
-            activeTodos = allTodos.filter(item => {
-                return !item.completed;
-            })
-
-            completedTodos = allTodos.filter(item => {
-                return item.completed;
-            })
-            let todos = {
-                allTodos,
-                activeTodos,
-                completedTodos
-            }
-            localStorage.setItem('todos', JSON.stringify(todos));
-            return {
-                ...state,
-                todos
-            }
-        }
-        // 删除todo
-        case DELETE_TODO:{
-            let {allTodos, activeTodos, completedTodos} = state.todos;
-            let {cache} = state;
-            allTodos = allTodos.filter(item => item.id !== payload);
-            activeTodos = activeTodos.filter(item => item.id !== payload);
-            completedTodos = completedTodos.filter(item => item.id !== payload);
-            cache = cache.filter(item => item.id !== payload);
-            let todos = {
-                allTodos,
-                activeTodos,
-                completedTodos
-            }
-            localStorage.setItem('todos', JSON.stringify(todos));
-            localStorage.setItem('cache', JSON.stringify(cache));
-            return {
-                ...state,
-                todos,
-                cache
-            }
-        }
-        // undo
-        case UNDO:{
-            let {allTodos, activeTodos, completedTodos} = state.todos;
-            let {cache} = state;
-            let undoItem = activeTodos.shift();
-            allTodos = allTodos.filter(item => item.id !== undoItem.id);
-            cache.unshift(undoItem);
-            let todos = {
-                allTodos,
-                activeTodos,
-                completedTodos
-            }
-            localStorage.setItem('todos', JSON.stringify(todos));
-            localStorage.setItem('cache', JSON.stringify(cache));
-            return {
-                ...state,
-                todos,
-                cache
-            }
-        }
-        // redo
-        case REDO:{
-            let {allTodos, activeTodos, completedTodos} = state.todos;
-            let {cache} = state;
-            let redoItem = cache.shift();
-            activeTodos.unshift(redoItem);
-            allTodos.unshift(redoItem);
-            let todos = {
-                allTodos,
-                activeTodos,
-                completedTodos
-            }
-            localStorage.setItem('todos', JSON.stringify(todos));
-            localStorage.setItem('cache', JSON.stringify(cache));
-            return {
-                ...state,
-                todos,
-                cache
-            }
-        }
-        // 清空已完成
-        case CLEAR_COMPLETED:{
-            let {allTodos, activeTodos} = state.todos;
-
-            allTodos = allTodos.filter(item => {
-                return item.completed === false
-            })
-
-            let todos = {
-                allTodos,
-                activeTodos,
-                completedTodos: []
-            }
-
-            localStorage.setItem('todos', JSON.stringify(todos));
-
-            return {
-                ...state,
-                todos
-            }
-        }
-        // 修改mode
-        case CHANGE_MODE:{
-            return {
-                ...state,
-                mode: payload
-            }
-        }
-        // 保存单行编辑内容
-        case SAVE_EDIT:{
-            let {allTodos, activeTodos, completedTodos} = state.todos;
-            allTodos = allTodos.map(item => {
-                if(item.id === payload.id){
-                    item.content = payload.content;
-                }
-                return item;
-            })
-            activeTodos = activeTodos.map(item => {
-                if(item.id === payload.id){
-                    item.content = payload.content;
-                }
-                return item;
-            })
-            completedTodos = completedTodos.map(item => {
-                if(item.id === payload.id){
-                    item.content = payload.content;
-                }
-                return item;
-            })
-            let todos = {
-                allTodos,
-                activeTodos,
-                completedTodos
-            }
-            localStorage.setItem('todos', JSON.stringify(todos));
-            return {
-                ...state,
-                todos
-            }
-        }
-        default:
-            return state;
-    }
-}
-
-export default reducer;

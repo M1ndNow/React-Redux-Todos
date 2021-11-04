@@ -1,0 +1,73 @@
+.footer {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+	padding: 8px 16px;
+	font-weight: 200;
+	font-size: .9rem;
+	color: rgba(0, 0, 0, .8);
+	position: relative;
+	box-shadow: 0 3px 3px 0 rgba(0, 0, 0, .1);
+
+	p {
+		font-size: .9rem;
+		line-height: 32px;
+	}
+
+	.mode-btns {
+		position: absolute;
+		left: 72px;
+		display: flex;
+		margin-left: 40px;
+		justify-content: center;
+		align-items: center;
+
+		button {
+			width: auto;
+			height: 2rem;
+			font-size: .8rem;
+			font-weight: 200;
+			-webkit-appearance: none;
+			background-color: #fff;
+			padding: 4px 8px;
+			border-radius: 5px;
+			margin: 0 6px;
+			border: none;
+			cursor: pointer;
+			border: 1px solid rgba(0, 0, 0, 0);
+			color: rgba(0, 0, 0, .8);
+		}
+
+		#undo-btn,
+		#redo-btn {
+			color: #fff;
+			background-color: skyblue;
+		}
+
+		#undo-btn:hover,
+		#redo-btn:hover {
+			border: 1px solid rgba(0, 0, 0, 0);
+		}
+
+		button:focus {
+			outline: none;
+		}
+
+		button:hover {
+			border: 1px solid rgba(135, 206, 235, .2);
+		}
+
+		.disabled {
+			background-color: rgba(0, 0, 0, .1) !important;
+		}
+
+		.active {
+			border: 1px solid skyblue !important;
+		}
+	}
+
+	#clear:hover {
+		cursor: pointer;
+		text-decoration: underline;
+	}
+}

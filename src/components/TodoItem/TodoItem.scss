@@ -1,0 +1,84 @@
+.todo-item {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	align-items: center;
+	position: relative;
+
+	input[type="checkbox"] {
+		appearance: none;
+		outline: none;
+		width: 36px;
+		height: 36px;
+		border: 1px solid rgba(0, 0, 0, 0.08);
+		cursor: pointer;
+		position: relative;
+		background-color: #fff;
+		border-radius: 50%;
+		font-size: 1.8rem;
+		margin: 8px;
+	}
+
+	input[type="checkbox"]:checked::after {
+		content: '\2713';
+		display: inline-block;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		text-align: center;
+		vertical-align: middle;
+		font-size: 1.8rem;
+		font-weight: 200;
+		color: skyblue;
+		width: 100%;
+		height: 100%;
+		border: skyblue;
+		border-radius: 50%;
+	}
+
+	label {
+		display: flex;
+		align-items: center;
+		line-height: 54px;
+		font-size: 24px;
+		font-weight: 200;
+		padding: 0 8px;
+		vertical-align: middle;
+		flex: 9;
+	}
+
+	input[type="checkbox"]:checked + label {
+		color: rgba(0, 0, 0, .2);
+	}
+
+	.todo-completed {
+		text-decoration: line-through;
+	}
+
+	.todo-active {
+		text-decoration: none;
+	}
+
+	#delete-btn {
+		width: 20px;
+		height: 20px;
+		transform: translateY(-35%);
+		position: absolute;
+		top: 0;
+		right: 24px;
+		font-size: 4rem;
+		font-weight: normal;
+		color: rgba(255, 0, 0, 0.5);
+		cursor: pointer;
+	}
+}
+
+li input {
+	width: 100%;
+	height: 100%;
+	font-size: 24px;
+	font-weight: 200;
+	padding: 0 16px;
+}

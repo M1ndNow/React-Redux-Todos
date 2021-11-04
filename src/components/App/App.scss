@@ -1,0 +1,19 @@
+.container {
+	width: 41vw;
+	margin: 0 auto;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	h1 {
+		font-size: 84px;
+		font-weight: 200;
+		letter-spacing: .2rem;
+		color: skyblue;
+	}
+	.input-bar,
+	.board,
+	.footer {
+		background-color: #fff;
+	}
+}
